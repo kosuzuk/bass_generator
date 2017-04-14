@@ -1,0 +1,128 @@
+debug.srp created srp.log for error report...
+runtime exception handler called
+exception is: undefined method - set_latency
+frame variables: {obj: <obj@000001EE2E804878>, x: 1}
+frame pc: 2
+frame method: latency_handler
+frame class: nil
+
+Debugger invoked.
+-----------------------------------------------------
+Method <global> in class nil
+-----------------------------------------------------
+Method <callin_method> in class nil
+-----------------------------------------------------
+Method wxs_handler in class nil, char 892 in file 
+    C:\Program Files\Serpent\wxslib\wxserpent.srp
+Frame variables: {'id': 29, 'event': 18, 'x': 505, 'y': 0, 'obj': <obj@000001EE2E804BC8>}
+  30:             return obj.handle(event, x, y)
+                                   ^
+-----------------------------------------------------
+Method handle in class Slider, char 12098 in file 
+    C:\Program Files\Serpent\wxslib\wxserpent.srp
+Frame variables: {'event': 18, 'x': 505, 'y': 0}
+ 437:             super.handle(WXS_SLIDER_UPDATED, x, 0)
+                              ^
+-----------------------------------------------------
+Method handle in class Control, char 4052 in file 
+    C:\Program Files\Serpent\wxslib\wxserpent.srp
+Frame variables: {'event': 18, 'x': 505, 'y': 0}
+ 135:         if handle_target_method(event, x, y, target, method)
+                                     ^
+-----------------------------------------------------
+Method handle_target_method in class Control, char 4527 in file 
+    C:\Program Files\Serpent\wxslib\wxserpent.srp
+Frame variables: {'event': 18, 'x': 505, 'y': 0, 'trgt': <obj@000001EE2E804878>, 'mthd': 'slider_changed', 'meth': nil, 'i': nil}
+ 148:             dispatch(event, x, y, trgt, mthd)
+                          ^
+-----------------------------------------------------
+Method dispatch in class Control, char 4749 in file 
+    C:\Program Files\Serpent\wxslib\wxserpent.srp
+Frame variables: {'event': 18, 'x': 505, 'y': 0, 'trgt': <obj@000001EE2E804878>, 'mthd': 'slider_changed'}
+ 156:             send(trgt, mthd, this, event, x, y)
+                      ^
+-----------------------------------------------------
+Method slider_changed in class Labeled_slider, char 4051 in file 
+    C:\Program Files\Serpent\wxslib\slider.srp
+Frame variables: {'source': <obj@000001EE2E804BC8>, 'event': 18, 'x': 505, 'y': 0}
+ 133:                 funcall(method, this, value)
+                             ^
+-----------------------------------------------------
+Method latency_handler in class nil, char 4196 in file 
+    C:\Users\Jack Dangremond\Downloads\p5\p5\player\../cond/stage.srp
+Frame variables: {'obj': <obj@000001EE2E804878>, 'x': 1}
+ 136:     midi_out.set_latency(x)
+                              ^
+undefined method - set_latency
+1> debugger reads 
+
+? - stack trace
+<id> - print variable value
+* - print all variables
++ - up one level (to caller)
+- - down one level (to callee)
+=<expr> - evaluate expression
+! - exit
+> - resume execution
+1> debugger reads 
+
+? - stack trace
+<id> - print variable value
+* - print all variables
++ - up one level (to caller)
+- - down one level (to callee)
+=<expr> - evaluate expression
+! - exit
+> - resume execution
+1> debugger reads 
+
+? - stack trace
+<id> - print variable value
+* - print all variables
++ - up one level (to caller)
+- - down one level (to callee)
+=<expr> - evaluate expression
+! - exit
+> - resume execution
+1> debugger reads 
+
+? - stack trace
+<id> - print variable value
+* - print all variables
++ - up one level (to caller)
+- - down one level (to callee)
+=<expr> - evaluate expression
+! - exit
+> - resume execution
+1> debugger reads 
+
+? - stack trace
+<id> - print variable value
+* - print all variables
++ - up one level (to caller)
+- - down one level (to callee)
+=<expr> - evaluate expression
+! - exit
+> - resume execution
+1> debugger reads 
+
+? - stack trace
+<id> - print variable value
+* - print all variables
++ - up one level (to caller)
+- - down one level (to callee)
+=<expr> - evaluate expression
+! - exit
+> - resume execution
+1> debugger reads 
+
+? - stack trace
+<id> - print variable value
+* - print all variables
++ - up one level (to caller)
+- - down one level (to callee)
+=<expr> - evaluate expression
+! - exit
+> - resume execution
+1> debugger reads !
+Exiting ...
