@@ -70,7 +70,8 @@ class List_people (Canvas):
 
     def paint(x):
         var bottom = (len(items) + 1) * ITEM_HEIGHT
-        set_font(8, 0, 0, 0, nil, "")
+        if get_os() == 'windows':
+            set_font(8, 0, 0, 0, nil, "")
         set_pen_color("BLACK")
         draw_line(0, ITEM_HEIGHT, width, ITEM_HEIGHT)
         set_pen_color("LIGHT GREY")

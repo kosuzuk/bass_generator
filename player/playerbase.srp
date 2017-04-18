@@ -6,6 +6,7 @@
 require "../cond/stage" // lots of shared code here with server
 require "player_panel"
 require "../cond/chat"
+require "http"
 
 APPLICATION = "cmsip"
 PITCH = 64
@@ -35,7 +36,8 @@ def wait_for_clock_sync()
 
 
 def player_has_clock_sync()
-    // conductor exists and we haave clock sync with it. Time to join
+    // conductor exists and we have clock sync with it. Time to join
+    display "player_has_clock_sync"
     o2_send_start()
     o2_add_string(SERVICE) // send our name
     o2_send_finish(0.0, "/cond/join", TCP)
@@ -59,6 +61,11 @@ def main():
     initialize_midi(SERVICE)
     o2_initialize(APPLICATION, false)
     o2_service_new(SERVICE)
+    if wxs_message_box("Do you want to ask the server for the conductor?",
+                       "Hub or Discovery", WXS_STYLE_YES_NO, 0) ==
+       WXS_MSG_YES
+        find_o2_hub_from_server()
+
     poll_function = 'o2_poll_fn'
     sched_time_get = 'o2_time_get'
     stage = Stage(0, 0, 0, STAGE_WIDTH, idiv(STAGE_WIDTH, 2), SERVICE)
@@ -73,6 +80,28 @@ def main():
     rtsched.cause(0, nil, 'wait_for_clock_sync')
     rtsched.finish_use()
     
+
+def find_o2_hub_from_server()
+    req = Http_request()
+    req.get("http://www.music.cs.cmu.edu/cgi-bin/o2hub/get.py")
+    while req.state != 'fail' and req.state != 'done'
+        time_sleep(0.1)
+        req.poll()
+    if req.state == 'fail':
+        display "Failed finding o2_hub", req.error
+        return
+    print "find_o2_hub_from_server got "; req.data
+    var loc1 = find(req.data, "Hub: ")
+    var loc2 = find(req.data, ":", loc1 + 5)
+    var loc3 = find(req.data, "<", loc2)
+    if loc3 < 0 
+        display "Failed finding o2_hub", req.error
+        return
+    var ip = subseq(req.data, loc1 + 5, loc2)
+    var port = subseq(req.data, loc2 + 1, loc3)
+    display "o2_hub", ip, port
+    o2_hub(ip, int(port))
+
 
 def player_init()
     // IMPORTANT: no handlers until clock sync; otherwise, we'll get
