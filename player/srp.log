@@ -1,128 +1,62 @@
 debug.srp created srp.log for error report...
 runtime exception handler called
-exception is: undefined method - set_latency
-frame variables: {obj: <obj@000001EE2E804878>, x: 1}
-frame pc: 2
-frame method: latency_handler
+exception is: [31;49mglobal variable is unbound - note_seq[39;49m
+frame variables: {i: nil}
+frame pc: 217
+frame method: play_a_measure
 frame class: nil
 
 Debugger invoked.
 -----------------------------------------------------
-Method <global> in class nil
+Method [32;49m<global>[39;49m in class [34;49mnil[39;49m
 -----------------------------------------------------
-Method <callin_method> in class nil
+Method [32;49m<callin_method>[39;49m in class [34;49mnil[39;49m
 -----------------------------------------------------
-Method wxs_handler in class nil, char 892 in file 
-    C:\Program Files\Serpent\wxslib\wxserpent.srp
-Frame variables: {'id': 29, 'event': 18, 'x': 505, 'y': 0, 'obj': <obj@000001EE2E804BC8>}
-  30:             return obj.handle(event, x, y)
-                                   ^
------------------------------------------------------
-Method handle in class Slider, char 12098 in file 
-    C:\Program Files\Serpent\wxslib\wxserpent.srp
-Frame variables: {'event': 18, 'x': 505, 'y': 0}
- 437:             super.handle(WXS_SLIDER_UPDATED, x, 0)
-                              ^
------------------------------------------------------
-Method handle in class Control, char 4052 in file 
-    C:\Program Files\Serpent\wxslib\wxserpent.srp
-Frame variables: {'event': 18, 'x': 505, 'y': 0}
- 135:         if handle_target_method(event, x, y, target, method)
-                                     ^
------------------------------------------------------
-Method handle_target_method in class Control, char 4527 in file 
-    C:\Program Files\Serpent\wxslib\wxserpent.srp
-Frame variables: {'event': 18, 'x': 505, 'y': 0, 'trgt': <obj@000001EE2E804878>, 'mthd': 'slider_changed', 'meth': nil, 'i': nil}
- 148:             dispatch(event, x, y, trgt, mthd)
-                          ^
------------------------------------------------------
-Method dispatch in class Control, char 4749 in file 
-    C:\Program Files\Serpent\wxslib\wxserpent.srp
-Frame variables: {'event': 18, 'x': 505, 'y': 0, 'trgt': <obj@000001EE2E804878>, 'mthd': 'slider_changed'}
- 156:             send(trgt, mthd, this, event, x, y)
+Method [32;49mwxs_sched_poll[39;49m in class [34;49mnil[39;49m, char 26004 in file 
+    /Users/kososuzuki/serpent/lib/sched.srp
+Frame variables: {'time': 688.002}
+ 615:     rtsched.poll(time)
                       ^
 -----------------------------------------------------
-Method slider_changed in class Labeled_slider, char 4051 in file 
-    C:\Program Files\Serpent\wxslib\slider.srp
-Frame variables: {'source': <obj@000001EE2E804BC8>, 'event': 18, 'x': 505, 'y': 0}
- 133:                 funcall(method, this, value)
-                             ^
+Method [32;49mpoll[39;49m in class [34;49mScheduler[39;49m, char 11217 in file 
+    /Users/kososuzuki/serpent/lib/sched.srp
+Frame variables: {'when': 688.002, 'event': [688, <obj@0x107dbe400>, 'activate', []], 'target': <obj@0x107dbe400>, 'message': 'activate', 'parms': []}
+ 231:             general_apply(target, message, parms)
+                               ^
 -----------------------------------------------------
-Method latency_handler in class nil, char 4196 in file 
-    C:\Users\Jack Dangremond\Downloads\p5\p5\player\../cond/stage.srp
-Frame variables: {'obj': <obj@000001EE2E804878>, 'x': 1}
- 136:     midi_out.set_latency(x)
-                              ^
-undefined method - set_latency
-1> debugger reads 
-
-? - stack trace
-<id> - print variable value
-* - print all variables
-+ - up one level (to caller)
-- - down one level (to callee)
-=<expr> - evaluate expression
-! - exit
-> - resume execution
-1> debugger reads 
-
-? - stack trace
-<id> - print variable value
-* - print all variables
-+ - up one level (to caller)
-- - down one level (to callee)
-=<expr> - evaluate expression
-! - exit
-> - resume execution
-1> debugger reads 
-
-? - stack trace
-<id> - print variable value
-* - print all variables
-+ - up one level (to caller)
-- - down one level (to callee)
-=<expr> - evaluate expression
-! - exit
-> - resume execution
-1> debugger reads 
-
-? - stack trace
-<id> - print variable value
-* - print all variables
-+ - up one level (to caller)
-- - down one level (to callee)
-=<expr> - evaluate expression
-! - exit
-> - resume execution
-1> debugger reads 
-
-? - stack trace
-<id> - print variable value
-* - print all variables
-+ - up one level (to caller)
-- - down one level (to callee)
-=<expr> - evaluate expression
-! - exit
-> - resume execution
-1> debugger reads 
-
-? - stack trace
-<id> - print variable value
-* - print all variables
-+ - up one level (to caller)
-- - down one level (to callee)
-=<expr> - evaluate expression
-! - exit
-> - resume execution
-1> debugger reads 
-
-? - stack trace
-<id> - print variable value
-* - print all variables
-+ - up one level (to caller)
-- - down one level (to callee)
-=<expr> - evaluate expression
-! - exit
-> - resume execution
-1> debugger reads !
-Exiting ...
+Method [32;49mgeneral_apply[39;49m in class [34;49mnil[39;49m, char 24614 in file 
+    /Users/kososuzuki/serpent/lib/sched.srp
+Frame variables: {'target': <obj@0x107dbe400>, 'message': 'activate', 'parms': []}
+ 568:         sendapply(target, message, parms)
+                                               ^
+-----------------------------------------------------
+Method [32;49mactivate[39;49m in class [34;49mVscheduler[39;49m, char 18477 in file 
+    /Users/kososuzuki/serpent/lib/sched.srp
+Frame variables: {'event': [688, <obj@0x107d787d8>, 'beat_update', []], 'target': <obj@0x107d787d8>, 'message': 'beat_update', 'parms': []}
+ 423:             general_apply(target, message, parms)
+                               ^
+-----------------------------------------------------
+Method [32;49mgeneral_apply[39;49m in class [34;49mnil[39;49m, char 24614 in file 
+    /Users/kososuzuki/serpent/lib/sched.srp
+Frame variables: {'target': <obj@0x107d787d8>, 'message': 'beat_update', 'parms': []}
+ 568:         sendapply(target, message, parms)
+                                               ^
+-----------------------------------------------------
+Method [32;49mbeat_update[39;49m in class [34;49mStage[39;49m, char 3014 in file 
+    /Users/kososuzuki/Desktop/bass_generator/player/../cond/stage.srp
+Frame variables: {'bnow': 688}
+ 103:         metronome()
+                       ^
+-----------------------------------------------------
+Method [32;49mmetronome[39;49m in class [34;49mStage[39;49m, char 3526 in file 
+    /Users/kososuzuki/Desktop/bass_generator/player/../cond/stage.srp
+Frame variables: {'pitch': 66}
+ 118:                     play_a_measure() // implemented in player only
+                                        ^
+-----------------------------------------------------
+Method [32;49mplay_a_measure[39;49m in class [34;49mnil[39;49m, char 2818 in file 
+    /Users/kososuzuki/Desktop/bass_generator/player/playerdemo.srp
+Frame variables: {'i': nil}
+  63:         midi_out.note(0, noteSeq[0][0], 100, note_seq[0][1])
+                                                   ^
+[31;49mglobal variable is unbound - note_seq[39;49m

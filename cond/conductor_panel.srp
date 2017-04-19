@@ -21,6 +21,7 @@ require "wxserpent"
 require "fancyslider.srp"
 require "list_draw"
 require "stage"
+require "http"
 
 STYLES = ["manual", "blues", "1564", "1564L", "6545", "6545L", "1545", "1545L", 
           "ii7v7", "ii7v7L", "Pach", "PachL"]
@@ -264,7 +265,7 @@ class Conductor_panel:
 
         slider_latency = Fancy_slider(win, "Latency", LEFT, ry + SLABEL_YO,
                                       SLIDER_W, SLIDER_H, LABEL_W, 
-                                      -100, 100, 0, 'integer')
+                                      -100, 300, 0, 'integer')
 
         ry = ry + SLIDER_H
         slider_bpm = Fancy_slider(win, "BPM", LEFT, ry + SLABEL_YO,
@@ -352,7 +353,11 @@ class Conductor_panel:
         chord_text.method = 'chord_text_handler'
         bass_text.method = 'bass_text_handler'
         sty_text.method = 'sty_text_handler'
-        
+
+        var publish_menu = default_window.get_menu("Publish")
+        publish_menu.item("Publish", "send address to web server",
+                          nil, nil, 'publish_handler')
+
 
     // called when COMMIT button is pressed, sends
     // harmony, style, and play/stop messages to performers
@@ -480,3 +485,21 @@ class Conductor_panel:
         chordtrans_ch.set_value(TRANS_CHOICES[0])
         bass_ch.set_value(TRANS_CHOICES[0])
         sty_ch.set_value(STYLE_CHOICES[0])
+
+
+def publish_handler(obj, event, x, y)
+    display "publish_handler", x, y
+    passwd = wxs_get_text("Password", "Text Input", "", 0)
+    var req = Http_request(t)
+    req.get("http://www.music.cs.cmu.edu/cgi-bin/o2hub/put.py?pass=" + 
+            passwd + "&hub=" + o2_get_address())
+    while req.state != 'fail' and req.state != 'done':
+        time_sleep(0.1)
+        req.poll()
+    if req.state == 'fail'
+        print req.error
+    else
+        print "published address of this conductor"; req.data
+
+
+        

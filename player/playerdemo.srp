@@ -1,22 +1,26 @@
-# playerdemo.srp - example of a bare-bones player
-#
-# Roger B. Dannenberg
-# March 2017
+SERVICE = "BassAndEffects"
 
-# IMPORTANT: SERVICE must be defined before you load playerbase.srp:
-SERVICE = "demo"
-
-# Now load playerbase.srp
 require "playerbase"
 
-// some simple music generation: Here are some problems with this:
-// - not very interesting
-// - no manual control of anything
-// - does everything: bass, chord, melody, instead of one thing
-// - all piano sounds
-// - cannot handle cur_beats_per_measure properly (assumes 4)
-// - plays absurdly fast at faster tempos
-//
+def MarkovRhythm(seq, ratio, beatsLeft, density, complexity):
+    if beatsLeft == 0
+        return seq
+    x = int(random() * 100)
+    for i = 0 to len(ratio)
+        if ratio[i][0] <= x and ratio[i][1] > x
+            seq.append(i)
+    MarkovRhythm(seq, ratio, beatsLeft - 4 / (2.0 ** real(seq[len(seq) - 1])), 
+                 density, complexity)
+
+def MarkovPitch(seq, ratio, rhythmSeq, scale, chord, root, complexity, range):
+    if len(seq) == len(rhythmSeq)
+        return seq
+    x = int(random() * 100)
+    for i = 0 to len(ratio)
+        if ratio[i][0] <= x and ratio[i][1] > x
+            seq.append([i, rhythmSeq[len(seq)]])
+    MarkovPitch(seq, ratio, rhythmSeq, scale, chord, root, complexity, range)
+
 def play_a_measure()
     # compute a measure using these variables:
     #    cur_style - a symbol representing style to play (if
@@ -36,28 +40,27 @@ def play_a_measure()
     #
     display "play_a_measure", cur_beats_per_measure, cur_bps
     display "    ", cur_scale, cur_chord, cur_bass
-    # Use EPSILON here because comparing floats for equality is not
-    #   reliable without very difficult analysis. So, instead of
-    #   x >= y, we write x + EPSILON > y
-    if cur_style == 'rock'
-        # play something using the root of the chord (cur_bass)
-        midi_out.note(0, 24 + cur_bass, 100, 1)
-        vtsched.cause(1, midi_out, 'note', 0, 24 + 7 + cur_bass, 100, 1)
-        vtsched.cause(2, midi_out, 'note', 0, 24 + cur_bass, 100, 1)
-        vtsched.cause(3, midi_out, 'note', 0, 24 + 7 + cur_bass, 100, 1)
 
-        # play notes from the chord
-        for i = 0 to 12
-            if cur_chord[i]
-                midi_out.note(0, 48 + i, 100, 0.5)
+    if cur_style == 'rock'
+        #midi_out.note(chan, key, vel, dur)
+        #vtsched.cause(beat, midi_out, 'note', chan, key, vel, dur)
+
+        #each elem represents the prob of the Markov Chain transitioning to that
+        #rhythm. Index 0 is whole note, 1 is half, 2 is quarter, etc the range 
+        #is lower bound exclusive upper bound inclusive.
+        rhythmProb = [[-1, 0], [-1, 0], [0, 101], [-1, 0], [-1, 0]]
+
+        rhythmSeq = MarkovRhythm([], rhythmProb, cur_beats_per_measure, 0, 0)
         
-        # pick a random note every 1/16 note (fast). If it's in the
-        # scale then play it, otherwise rest. Start on 2nd beat because
-        # we play the chord on downbeat and it might be nice to keep
-        # chord and "melody" separate so we can hear them clearly in
-        # this demo.
-        for i = 0 to 12 // only 3 beats
-            var pitch = 60 + int(random() * 12)
-            if cur_scale[pitch % 12]
-                vtsched.cause(1 + i * 0.25, midi_out, 'note',
-                              0, pitch, 100, 0.3)
+        #Same as rhythmProb, except index 0 is C, 1 is C#, etc last index is rest.
+        pitchProb = [[0, 101], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], 
+                     [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0]]
+        
+        noteSeq = MarkovPitch([], pitchProb, rhythmSeq, cur_scale,
+                              cur_chord, cur_bass, 0, 0)
+
+        midi_out.note(0, noteSeq[0][0] + 12, 100, noteSeq[0][1])
+        curBeat = 4 / (2.0 ** real(noteSeq[0][1]))
+        for i = 1 to len(noteSeq)
+            vtsched.cause(curBeat, midi_out, 'note', 0, noteSeq[i][0] + 12, 100, noteSeq[i][1])
+            curBeat = curBeat + (4 / (2.0 ** real(noteSeq[i][1])))
