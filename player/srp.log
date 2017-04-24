@@ -1,9 +1,9 @@
 debug.srp created srp.log for error report...
 runtime exception handler called
-exception is: [31;49mparameter count mismatch[39;49m
-frame variables: {i: nil}
-frame pc: 208
-frame method: play_a_measure
+exception is: [31;49mglobal variable is unbound - newNote[39;49m
+frame variables: {seq: [4], ratio: [[-1, 0], [-1, 0], [-1, 0], [67, 100], [0, 67]], beatsLeft: 4, i: 4}
+frame pc: 63
+frame method: MarkovRhythm
 frame class: nil
 
 Debugger invoked.
@@ -14,37 +14,37 @@ Method [32;49m<callin_method>[39;49m in class [34;49mnil[39;49m
 -----------------------------------------------------
 Method [32;49mwxs_sched_poll[39;49m in class [34;49mnil[39;49m, char 26004 in file 
     /Users/kososuzuki/serpent/lib/sched.srp
-Frame variables: {'time': 16.0016}
+Frame variables: {'time': 144.002}
  615:     rtsched.poll(time)
                       ^
 -----------------------------------------------------
 Method [32;49mpoll[39;49m in class [34;49mScheduler[39;49m, char 11217 in file 
     /Users/kososuzuki/serpent/lib/sched.srp
-Frame variables: {'when': 16.0016, 'event': [16, <obj@0x1102e2400>, 'activate', []], 'target': <obj@0x1102e2400>, 'message': 'activate', 'parms': []}
+Frame variables: {'when': 144.002, 'event': [144, <obj@0x10512f400>, 'activate', []], 'target': <obj@0x10512f400>, 'message': 'activate', 'parms': []}
  231:             general_apply(target, message, parms)
                                ^
 -----------------------------------------------------
 Method [32;49mgeneral_apply[39;49m in class [34;49mnil[39;49m, char 24614 in file 
     /Users/kososuzuki/serpent/lib/sched.srp
-Frame variables: {'target': <obj@0x1102e2400>, 'message': 'activate', 'parms': []}
+Frame variables: {'target': <obj@0x10512f400>, 'message': 'activate', 'parms': []}
  568:         sendapply(target, message, parms)
                                                ^
 -----------------------------------------------------
 Method [32;49mactivate[39;49m in class [34;49mVscheduler[39;49m, char 18477 in file 
     /Users/kososuzuki/serpent/lib/sched.srp
-Frame variables: {'event': [16, <obj@0x11029c7d8>, 'beat_update', []], 'target': <obj@0x11029c7d8>, 'message': 'beat_update', 'parms': []}
+Frame variables: {'event': [144, <obj@0x1050e97d8>, 'beat_update', []], 'target': <obj@0x1050e97d8>, 'message': 'beat_update', 'parms': []}
  423:             general_apply(target, message, parms)
                                ^
 -----------------------------------------------------
 Method [32;49mgeneral_apply[39;49m in class [34;49mnil[39;49m, char 24614 in file 
     /Users/kososuzuki/serpent/lib/sched.srp
-Frame variables: {'target': <obj@0x11029c7d8>, 'message': 'beat_update', 'parms': []}
+Frame variables: {'target': <obj@0x1050e97d8>, 'message': 'beat_update', 'parms': []}
  568:         sendapply(target, message, parms)
                                                ^
 -----------------------------------------------------
 Method [32;49mbeat_update[39;49m in class [34;49mStage[39;49m, char 3014 in file 
     /Users/kososuzuki/Desktop/bass_generator/player/../cond/stage.srp
-Frame variables: {'bnow': 16}
+Frame variables: {'bnow': 144}
  103:         metronome()
                        ^
 -----------------------------------------------------
@@ -54,9 +54,15 @@ Frame variables: {'pitch': 66}
  118:                     play_a_measure() // implemented in player only
                                         ^
 -----------------------------------------------------
-Method [32;49mplay_a_measure[39;49m in class [34;49mnil[39;49m, char 4606 in file 
+Method [32;49mplay_a_measure[39;49m in class [34;49mnil[39;49m, char 4768 in file 
     /Users/kososuzuki/Desktop/bass_generator/player/playerdemo.srp
 Frame variables: {'i': nil}
- 108:         makeRatioPitch([], ratio, cur_scale, cur_chord, cur_bass, complexity, range)
-                            ^
-[31;49mparameter count mismatch[39;49m
+ 121:         rhythmSeq = MarkovRhythm([], ratio, cur_beats_per_measure)
+                                      ^
+-----------------------------------------------------
+Method [32;49mMarkovRhythm[39;49m in class [34;49mnil[39;49m, char 2724 in file 
+    /Users/kososuzuki/Desktop/bass_generator/player/playerdemo.srp
+Frame variables: {'seq': [4], 'ratio': [[-1, 0], [-1, 0], [-1, 0], [67, 100], [0, 67]], 'beatsLeft': 4, 'i': 4}
+  80:             beatsLeft = beatsLeft - 4 / (2.0 ** real(newNote))
+                                                           ^
+[31;49mglobal variable is unbound - newNote[39;49m
