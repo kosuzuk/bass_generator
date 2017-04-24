@@ -7,6 +7,43 @@ complexity = 80
 range = 49
 constantBass = false
 
+def fader1_handler(time, address, types, float_param)
+    display "fader1_handler", time, address, types, float_param
+    vtsched.start_use()
+    if float_param != 1: density = int(100*float_param)
+    display density
+    vtsched.finish_use()
+
+def fader2_handler(time, address, types, float_param)
+    display "fader2_handler", time, address, types, float_param
+    vtsched.start_use()
+    if float_param != 1: complexity = int(100*float_param)
+    display complexity
+    vtsched.finish_use()
+
+def fader3_handler(time, address, types, float_param)
+    display "fader3_handler", time, address, types, float_param
+    vtsched.start_use()
+    if float_param != 1: range = int(100*float_param)
+    display range
+    vtsched.finish_use()
+
+def toggle1_handler(time, address, types, int_param)
+    display "toggle1_handler", time, address, types, int_param
+    vtsched.start_use()
+    constantBass = int_param
+    display constantBass
+    vtsched.finish_use()
+
+def initializeServices():
+    o2_osc_port_new(SERVICE, 8660, false)
+    o2_method_new("/" + SERVICE + "/1/fader1", "f", 'fader1_handler', true)
+    o2_method_new("/" + SERVICE + "/1/fader2", "f", 'fader2_handler', true)
+    o2_method_new("/" + SERVICE + "/1/fader3", "f", 'fader3_handler', true)
+    o2_method_new("/" + SERVICE + "/1/toggle1", "i", 'toggle1_handler', true)
+
+initializeServices()
+
 #(seq is the sequence of notes so far, ratio is array of ratios for transitioning 
 # to states, density is a scale of [0, 100) to determine the amount of rest
 # complexity is a scale of [0, 100) to 
