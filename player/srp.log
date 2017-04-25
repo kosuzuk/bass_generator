@@ -1,9 +1,9 @@
 debug.srp created srp.log for error report...
 runtime exception handler called
-exception is: [31;49msubscript out of bounds: 12[39;49m
-frame variables: {seq: [[12, 3], [0, 4], [12, 4], [7, 3], [0, 4], [12, 4], [4, 4], [7, 4], [7, 4], [12, 3], [0, 4], [0, 3]], ratio: [[5, 21], [-1, 0], [-1, 0], [-1, 0], [19, 35], [-1, 0], [-1, 0], [35, 51], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [50, 100]], rhythmSeq: [3, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 3], i: 4}
-frame pc: 54
-frame method: MarkovPitch
+exception is: [31;49mundefined method - o2_hub[39;49m
+frame variables: {loc1: 62, loc2: 81, loc3: 87, ip: 128.237.164.12, port: 51371}
+frame pc: 125
+frame method: find_o2_hub_from_server
 frame class: nil
 
 Debugger invoked.
@@ -12,123 +12,26 @@ Method [32;49m<global>[39;49m in class [34;49mnil[39;49m
 -----------------------------------------------------
 Method [32;49m<callin_method>[39;49m in class [34;49mnil[39;49m
 -----------------------------------------------------
-Method [32;49mwxs_sched_poll[39;49m in class [34;49mnil[39;49m, char 26004 in file 
-    /Users/kososuzuki/serpent/lib/sched.srp
-Frame variables: {'time': 32.0016}
- 615:     rtsched.poll(time)
-                      ^
------------------------------------------------------
-Method [32;49mpoll[39;49m in class [34;49mScheduler[39;49m, char 11217 in file 
-    /Users/kososuzuki/serpent/lib/sched.srp
-Frame variables: {'when': 32.0016, 'event': [32, <obj@0x111eae400>, 'activate', []], 'target': <obj@0x111eae400>, 'message': 'activate', 'parms': []}
- 231:             general_apply(target, message, parms)
-                               ^
------------------------------------------------------
-Method [32;49mgeneral_apply[39;49m in class [34;49mnil[39;49m, char 24614 in file 
-    /Users/kososuzuki/serpent/lib/sched.srp
-Frame variables: {'target': <obj@0x111eae400>, 'message': 'activate', 'parms': []}
- 568:         sendapply(target, message, parms)
-                                               ^
------------------------------------------------------
-Method [32;49mactivate[39;49m in class [34;49mVscheduler[39;49m, char 18477 in file 
-    /Users/kososuzuki/serpent/lib/sched.srp
-Frame variables: {'event': [32, <obj@0x111e687d8>, 'beat_update', []], 'target': <obj@0x111e687d8>, 'message': 'beat_update', 'parms': []}
- 423:             general_apply(target, message, parms)
-                               ^
------------------------------------------------------
-Method [32;49mgeneral_apply[39;49m in class [34;49mnil[39;49m, char 24614 in file 
-    /Users/kososuzuki/serpent/lib/sched.srp
-Frame variables: {'target': <obj@0x111e687d8>, 'message': 'beat_update', 'parms': []}
- 568:         sendapply(target, message, parms)
-                                               ^
------------------------------------------------------
-Method [32;49mbeat_update[39;49m in class [34;49mStage[39;49m, char 3014 in file 
-    /Users/kososuzuki/Desktop/bass_generator/player/../cond/stage.srp
-Frame variables: {'bnow': 32}
- 103:         metronome()
-                       ^
------------------------------------------------------
-Method [32;49mmetronome[39;49m in class [34;49mStage[39;49m, char 3526 in file 
-    /Users/kososuzuki/Desktop/bass_generator/player/../cond/stage.srp
-Frame variables: {'pitch': 66}
- 118:                     play_a_measure() // implemented in player only
-                                        ^
------------------------------------------------------
-Method [32;49mplay_a_measure[39;49m in class [34;49mnil[39;49m, char 7307 in file 
+Method [32;49m<immediate command 0>[39;49m in class [34;49mnil[39;49m, char 28 in file 
     /Users/kososuzuki/Desktop/bass_generator/player/playerdemo.srp
-Frame variables: {'i': nil}
- 194:         noteSeq = MarkovPitch([], ratio, rhythmSeq)
-                                   ^
+   4: require "playerbase"
+      ^
 -----------------------------------------------------
-Method [32;49mMarkovPitch[39;49m in class [34;49mnil[39;49m, char 5446 in file 
-    /Users/kososuzuki/Desktop/bass_generator/player/playerdemo.srp
-Frame variables: {'seq': [[12, 3], [0, 4], [12, 4], [7, 3], [0, 4], [12, 4], [4, 4], [7, 4], [7, 4], [12, 3], [0, 4], [0, 3]], 'ratio': [[5, 21], [-1, 0], [-1, 0], [-1, 0], [19, 35], [-1, 0], [-1, 0], [35, 51], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [50, 100]], 'rhythmSeq': [3, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 3], 'i': 13}
- 159:     MarkovPitch(seq, ratio, rhythmSeq)
-                     ^
+Method [32;49m<callin_method>[39;49m in class [34;49mnil[39;49m
 -----------------------------------------------------
-Method [32;49mMarkovPitch[39;49m in class [34;49mnil[39;49m, char 5446 in file 
-    /Users/kososuzuki/Desktop/bass_generator/player/playerdemo.srp
-Frame variables: {'seq': [[12, 3], [0, 4], [12, 4], [7, 3], [0, 4], [12, 4], [4, 4], [7, 4], [7, 4], [12, 3], [0, 4], [0, 3]], 'ratio': [[5, 21], [-1, 0], [-1, 0], [-1, 0], [19, 35], [-1, 0], [-1, 0], [35, 51], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [50, 100]], 'rhythmSeq': [3, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 3], 'i': 13}
- 159:     MarkovPitch(seq, ratio, rhythmSeq)
-                     ^
+Method [32;49m<immediate command 1>[39;49m in class [34;49mnil[39;49m, char 9543 in file 
+    /Users/kososuzuki/Desktop/bass_generator/player/playerbase.srp
+ 292: main()
+          ^
 -----------------------------------------------------
-Method [32;49mMarkovPitch[39;49m in class [34;49mnil[39;49m, char 5446 in file 
-    /Users/kososuzuki/Desktop/bass_generator/player/playerdemo.srp
-Frame variables: {'seq': [[12, 3], [0, 4], [12, 4], [7, 3], [0, 4], [12, 4], [4, 4], [7, 4], [7, 4], [12, 3], [0, 4], [0, 3]], 'ratio': [[5, 21], [-1, 0], [-1, 0], [-1, 0], [19, 35], [-1, 0], [-1, 0], [35, 51], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [50, 100]], 'rhythmSeq': [3, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 3], 'i': 13}
- 159:     MarkovPitch(seq, ratio, rhythmSeq)
-                     ^
+Method [32;49mmain[39;49m in class [34;49mnil[39;49m, char 1997 in file 
+    /Users/kososuzuki/Desktop/bass_generator/player/playerbase.srp
+  68:         find_o2_hub_from_server()
+                                     ^
 -----------------------------------------------------
-Method [32;49mMarkovPitch[39;49m in class [34;49mnil[39;49m, char 5446 in file 
-    /Users/kososuzuki/Desktop/bass_generator/player/playerdemo.srp
-Frame variables: {'seq': [[12, 3], [0, 4], [12, 4], [7, 3], [0, 4], [12, 4], [4, 4], [7, 4], [7, 4], [12, 3], [0, 4], [0, 3]], 'ratio': [[5, 21], [-1, 0], [-1, 0], [-1, 0], [19, 35], [-1, 0], [-1, 0], [35, 51], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [50, 100]], 'rhythmSeq': [3, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 3], 'i': 13}
- 159:     MarkovPitch(seq, ratio, rhythmSeq)
-                     ^
------------------------------------------------------
-Method [32;49mMarkovPitch[39;49m in class [34;49mnil[39;49m, char 5446 in file 
-    /Users/kososuzuki/Desktop/bass_generator/player/playerdemo.srp
-Frame variables: {'seq': [[12, 3], [0, 4], [12, 4], [7, 3], [0, 4], [12, 4], [4, 4], [7, 4], [7, 4], [12, 3], [0, 4], [0, 3]], 'ratio': [[5, 21], [-1, 0], [-1, 0], [-1, 0], [19, 35], [-1, 0], [-1, 0], [35, 51], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [50, 100]], 'rhythmSeq': [3, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 3], 'i': 13}
- 159:     MarkovPitch(seq, ratio, rhythmSeq)
-                     ^
------------------------------------------------------
-Method [32;49mMarkovPitch[39;49m in class [34;49mnil[39;49m, char 5446 in file 
-    /Users/kososuzuki/Desktop/bass_generator/player/playerdemo.srp
-Frame variables: {'seq': [[12, 3], [0, 4], [12, 4], [7, 3], [0, 4], [12, 4], [4, 4], [7, 4], [7, 4], [12, 3], [0, 4], [0, 3]], 'ratio': [[5, 21], [-1, 0], [-1, 0], [-1, 0], [19, 35], [-1, 0], [-1, 0], [35, 51], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [50, 100]], 'rhythmSeq': [3, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 3], 'i': 13}
- 159:     MarkovPitch(seq, ratio, rhythmSeq)
-                     ^
------------------------------------------------------
-Method [32;49mMarkovPitch[39;49m in class [34;49mnil[39;49m, char 5446 in file 
-    /Users/kososuzuki/Desktop/bass_generator/player/playerdemo.srp
-Frame variables: {'seq': [[12, 3], [0, 4], [12, 4], [7, 3], [0, 4], [12, 4], [4, 4], [7, 4], [7, 4], [12, 3], [0, 4], [0, 3]], 'ratio': [[5, 21], [-1, 0], [-1, 0], [-1, 0], [19, 35], [-1, 0], [-1, 0], [35, 51], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [50, 100]], 'rhythmSeq': [3, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 3], 'i': 13}
- 159:     MarkovPitch(seq, ratio, rhythmSeq)
-                     ^
------------------------------------------------------
-Method [32;49mMarkovPitch[39;49m in class [34;49mnil[39;49m, char 5446 in file 
-    /Users/kososuzuki/Desktop/bass_generator/player/playerdemo.srp
-Frame variables: {'seq': [[12, 3], [0, 4], [12, 4], [7, 3], [0, 4], [12, 4], [4, 4], [7, 4], [7, 4], [12, 3], [0, 4], [0, 3]], 'ratio': [[5, 21], [-1, 0], [-1, 0], [-1, 0], [19, 35], [-1, 0], [-1, 0], [35, 51], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [50, 100]], 'rhythmSeq': [3, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 3], 'i': 13}
- 159:     MarkovPitch(seq, ratio, rhythmSeq)
-                     ^
------------------------------------------------------
-Method [32;49mMarkovPitch[39;49m in class [34;49mnil[39;49m, char 5446 in file 
-    /Users/kososuzuki/Desktop/bass_generator/player/playerdemo.srp
-Frame variables: {'seq': [[12, 3], [0, 4], [12, 4], [7, 3], [0, 4], [12, 4], [4, 4], [7, 4], [7, 4], [12, 3], [0, 4], [0, 3]], 'ratio': [[5, 21], [-1, 0], [-1, 0], [-1, 0], [19, 35], [-1, 0], [-1, 0], [35, 51], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [50, 100]], 'rhythmSeq': [3, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 3], 'i': 13}
- 159:     MarkovPitch(seq, ratio, rhythmSeq)
-                     ^
------------------------------------------------------
-Method [32;49mMarkovPitch[39;49m in class [34;49mnil[39;49m, char 5446 in file 
-    /Users/kososuzuki/Desktop/bass_generator/player/playerdemo.srp
-Frame variables: {'seq': [[12, 3], [0, 4], [12, 4], [7, 3], [0, 4], [12, 4], [4, 4], [7, 4], [7, 4], [12, 3], [0, 4], [0, 3]], 'ratio': [[5, 21], [-1, 0], [-1, 0], [-1, 0], [19, 35], [-1, 0], [-1, 0], [35, 51], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [50, 100]], 'rhythmSeq': [3, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 3], 'i': 13}
- 159:     MarkovPitch(seq, ratio, rhythmSeq)
-                     ^
------------------------------------------------------
-Method [32;49mMarkovPitch[39;49m in class [34;49mnil[39;49m, char 5446 in file 
-    /Users/kososuzuki/Desktop/bass_generator/player/playerdemo.srp
-Frame variables: {'seq': [[12, 3], [0, 4], [12, 4], [7, 3], [0, 4], [12, 4], [4, 4], [7, 4], [7, 4], [12, 3], [0, 4], [0, 3]], 'ratio': [[5, 21], [-1, 0], [-1, 0], [-1, 0], [19, 35], [-1, 0], [-1, 0], [35, 51], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [50, 100]], 'rhythmSeq': [3, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 3], 'i': 13}
- 159:     MarkovPitch(seq, ratio, rhythmSeq)
-                     ^
------------------------------------------------------
-Method [32;49mMarkovPitch[39;49m in class [34;49mnil[39;49m, char 5387 in file 
-    /Users/kososuzuki/Desktop/bass_generator/player/playerdemo.srp
-Frame variables: {'seq': [[12, 3], [0, 4], [12, 4], [7, 3], [0, 4], [12, 4], [4, 4], [7, 4], [7, 4], [12, 3], [0, 4], [0, 3]], 'ratio': [[5, 21], [-1, 0], [-1, 0], [-1, 0], [19, 35], [-1, 0], [-1, 0], [35, 51], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [50, 100]], 'rhythmSeq': [3, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 3], 'i': 4}
- 157:             seq.append([i, rhythmSeq[len(seq)]])
-                                          ^
-[31;49msubscript out of bounds: 12[39;49m
+Method [32;49mfind_o2_hub_from_server[39;49m in class [34;49mnil[39;49m, char 3346 in file 
+    /Users/kososuzuki/Desktop/bass_generator/player/playerbase.srp
+Frame variables: {'loc1': 62, 'loc2': 81, 'loc3': 87, 'ip': "128.237.164.12", 'port': "51371"}
+ 104:     o2_hub(ip, int(port))
+                ^
+[31;49mundefined method - o2_hub[39;49m

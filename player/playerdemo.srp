@@ -2,10 +2,10 @@ SERVICE = "BassAndEffects"
 
 require "playerbase"
 
-density = 50
-complexity = 50
+density = 78
+complexity = 80
 range = 50
-constantBass = false
+constantBass = true
 
 def fader1_handler(time, address, types, float_param)
     display "fader1_handler", time, address, types, float_param
@@ -49,6 +49,11 @@ initializeServices()
 # complexity is a scale of [0, 100) to 
 # determine variation and complexity to rhythm)
 def makeRatioRhythm(ratio)
+    if constantBass
+        for i = 0 to 5
+            ratio[i] = [-1, 0]
+        ratio[idiv(complexity, 20)] = [0, 100]
+        return
     i = idiv(complexity, 20)
     if i == 0
         ratio[idiv(99 - density, 20)] = [0, 100]
@@ -75,6 +80,11 @@ def makeRatioPitch(seq, ratio)
         for i = 0 to 12
             ratio[i] = [-1, 0]
         ratio[12] = [0, 100]
+        return      
+    if constantBass
+        for i = 0 to 12
+            ratio[i] = [-1, 0]
+        ratio[cur_bass] = [0, 100]
         return
     i = idiv(complexity, 20)
     if seq == []
