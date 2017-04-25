@@ -2,8 +2,8 @@ SERVICE = "bass"
 
 require "playerbase"
 
-density = 90
-complexity = 90
+density = 89
+complexity = 99
 range = 50
 constantBass = false
 rootDownbeat = true
@@ -212,7 +212,7 @@ def play_a_measure()
             vel = 0
         else
             vel = 100
-        midi_out.note(0, noteSeq[0][0] + 36, vel, curBeat)
+        midi_out.note(0, noteSeq[0][0] + 36, vel, curBeat - .01)
         print "noteSeq:", noteSeq
         for i = 1 to len(noteSeq)
             dur = 4 / (2.0 ** real(noteSeq[i][1]))
@@ -221,5 +221,5 @@ def play_a_measure()
             else
                 vel = 100
             vtsched.cause(curBeat, midi_out, 'note', 0, noteSeq[i][0] + 36, vel,
-                          dur)
+                          dur - .01)
             curBeat = curBeat + dur
