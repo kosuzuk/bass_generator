@@ -2,29 +2,29 @@ SERVICE = "BassAndEffects"
 
 require "playerbase"
 
-density = 90
-complexity = 90
-range = 49
+density = 50
+complexity = 50
+range = 50
 constantBass = false
 
 def fader1_handler(time, address, types, float_param)
     display "fader1_handler", time, address, types, float_param
     vtsched.start_use()
-    if float_param != 1: density = int(100*float_param)
+    if float_param != 1: density = int(100 * float_param)
     display density
     vtsched.finish_use()
 
 def fader2_handler(time, address, types, float_param)
     display "fader2_handler", time, address, types, float_param
     vtsched.start_use()
-    if float_param != 1: complexity = int(100*float_param)
+    if float_param != 1: complexity = int(100 * float_param)
     display complexity
     vtsched.finish_use()
 
 def fader3_handler(time, address, types, float_param)
     display "fader3_handler", time, address, types, float_param
     vtsched.start_use()
-    if float_param != 1: range = int(100*float_param)
+    if float_param != 1: range = int(100 * float_param)
     display range
     vtsched.finish_use()
 
@@ -35,7 +35,7 @@ def toggle1_handler(time, address, types, int_param)
     display constantBass
     vtsched.finish_use()
 
-def initializeServices():
+def initializeServices()
     o2_osc_port_new(SERVICE, 8660, false)
     o2_method_new("/" + SERVICE + "/1/fader1", "f", 'fader1_handler', true)
     o2_method_new("/" + SERVICE + "/1/fader2", "f", 'fader2_handler', true)
@@ -48,13 +48,15 @@ initializeServices()
 # to states, density is a scale of [0, 100) to determine the amount of rest
 # complexity is a scale of [0, 100) to 
 # determine variation and complexity to rhythm)
-def makeRatioRhythm(ratio):
+def makeRatioRhythm(ratio)
     i = idiv(complexity, 20)
     if i == 0
         ratio[idiv(99 - density, 20)] = [0, 100]
     elif i == 1
-        ratio[1] = [0, density]
-        ratio[2] = [density, 100]
+        if density < 75
+            ratio[idiv(99 - density, 20)] = [0, 100]
+        else
+            ratio[1] = [0, 100]
     elif i == 4
         ratio[4] = [0, 67]
         ratio[3] = [67, 100]
@@ -68,31 +70,32 @@ def makeRatioRhythm(ratio):
 # determine the amount of rest, complexity is a scale of [0, 100) to
 # determine variation for eaxmple not starting on root, use of non-chord tones 
 # and non-harmonic tones, wider jumps, range determines pitch range on a scale of [0, 100))
-def makeRatioPitch(seq, ratio):
+def makeRatioPitch(seq, ratio)
+    if density == 0
+        for i = 0 to 12
+            ratio[i] = [-1, 0]
+        ratio[12] = [0, 100]
+        return
     i = idiv(complexity, 20)
-    if seq == []:
-        if i == 0:
-            restRatio = 0
-        elif i == 1:
-            restRatio = 10
-        else:
+    if seq == []
+        if i < 2
+            if density < 20
+                restRatio = 99 - (density * 4)
+            else
+                restRatio = 0
+        else
             restRatio = 99 - density
-    else:
-        if i == 0:
+    else
+        if i == 0
             restRatio = 99
-        elif i == 1:
+        elif i == 1
+            if density < 75
+                restRatio = 99
+            else
+                restRatio = 0
+        else
             restRatio = 99 - density
-            if seq[0][0] == 12:
-                restRatio = restRatio - 20
-                if restRatio < 0:
-                    restRatio = 0
-            else:
-                restRatio = restRatio + 20
-                if restRatio > 99:
-                    restRatio = 99
-        else:
-            restRatio = 99 - density
-    ratio[12] = [0, restRatio + 1]
+    ratio[12] = [100 - restRatio, 100]
     numNotesInChord = 0
     for i = 0 to 12
         if cur_chord[i]
@@ -102,25 +105,34 @@ def makeRatioPitch(seq, ratio):
         ratioInterval = ratioInterval - 8
     ratioInterval = int(ratioInterval * ((100 - restRatio) / 100))
     nthNoteInChord = 0
-    total = 0
+    total = restRatio + 1
     for i = 0 to 12
         if cur_chord[i]
-            ratio[i][0] = ratio[i][0] + nthNoteInChord * ratioInterval + 1 + restRatio
+            ratio[i][0] = nthNoteInChord * ratioInterval
             ratio[i][1] = ratio[i][0] + ratioInterval
-            x = i
-            if numNotesInChord == 3 and nthNoteInChord == 2
-                ratio[i][1] = ratio[i][1] + 1
-            total = total + ratioInterval
             nthNoteInChord = nthNoteInChord + 1
+            total = total + ratioInterval
+            x = i
         else
             ratio[i] = [-1, 0]
-    #add remaining ratios caused by decimal truncation to the last possible note
-    #of the scale
-    ratio[x][1] = ratio[x][1] + (100 - total)
+    #add remaining ratios caused by decimal truncation as evenly as possible to
+    #valid notes for output
+    remainder = 100 - total
+    i = 0
+    while remainder != 0
+        while ratio[i] == [-1, 0]
+            i = (i + 1) % 12
+        ratio[i][1] = ratio[i][1] + 1
+        remainder = remainder - 1
+        for j = i + 1 to 12
+            if ratio[j] != [-1, 0]
+                ratio[j] = [ratio[j][0] + 1, ratio[j][1] + 1]
+        i = i + 1
+    print "pitchRatio:", ratio
 
 #(seq is the seq of rhythms so far, ratio is array of ratios for 
 # transitioning to states, beatsLeft is num of beats left in the measure)
-def MarkovRhythm(seq, ratio, beatsLeft):
+def MarkovRhythm(seq, ratio, beatsLeft)
     if beatsLeft < 0.2
         return seq
     x = int(random() * 100)
@@ -133,7 +145,7 @@ def MarkovRhythm(seq, ratio, beatsLeft):
 
 #(seq is the seq of notes so far, ratio is array of ratios for 
 # transitioning to states, rhythmSeq is array of rhythm seq to match the pitch)
-def MarkovPitch(seq, ratio, rhythmSeq):
+def MarkovPitch(seq, ratio, rhythmSeq)
     if len(seq) == len(rhythmSeq)
         return seq
     x = int(random() * 100)
@@ -177,11 +189,16 @@ def play_a_measure()
                  [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0]]
         makeRatioPitch([], ratio)
         noteSeq = MarkovPitch([], ratio, rhythmSeq)
-        midi_out.note(0, noteSeq[0][0] + 36, 100, noteSeq[0][1])
         curBeat = 4 / (2.0 ** real(noteSeq[0][1]))
+        if noteSeq[0][0] == 12
+            vel = 0
+        else
+            vel = 100
+        midi_out.note(0, noteSeq[0][0] + 36, vel, curBeat)
+        print "noteSeq:", noteSeq
         for i = 1 to len(noteSeq)
             dur = 4 / (2.0 ** real(noteSeq[i][1]))
-            if noteSeq[i][0] == 12:
+            if noteSeq[i][0] == 12
                 vel = 0
             else
                 vel = 100
