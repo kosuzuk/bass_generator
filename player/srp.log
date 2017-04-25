@@ -1,9 +1,9 @@
 debug.srp created srp.log for error report...
 runtime exception handler called
-exception is: [31;49mglobal variable is unbound - dur[39;49m
-frame variables: {i: nil}
-frame pc: 300
-frame method: play_a_measure
+exception is: [31;49mglobal variable is unbound - j[39;49m
+frame variables: {seq: [], ratio: [[-1, 0], [73, 100], [0, 46], [46, 73], [-1, 0]], beatsLeft: 4, i: 2}
+frame pc: 78
+frame method: MarkovRhythm
 frame class: nil
 
 Debugger invoked.
@@ -14,31 +14,31 @@ Method [32;49m<callin_method>[39;49m in class [34;49mnil[39;49m
 -----------------------------------------------------
 Method [32;49mwxs_sched_poll[39;49m in class [34;49mnil[39;49m, char 26004 in file 
     /Users/kososuzuki/serpent/lib/sched.srp
-Frame variables: {'time': 12.0015}
+Frame variables: {'time': 12.0014}
  615:     rtsched.poll(time)
                       ^
 -----------------------------------------------------
 Method [32;49mpoll[39;49m in class [34;49mScheduler[39;49m, char 11217 in file 
     /Users/kososuzuki/serpent/lib/sched.srp
-Frame variables: {'when': 12.0015, 'event': [12, <obj@0x104be23d8>, 'activate', []], 'target': <obj@0x104be23d8>, 'message': 'activate', 'parms': []}
+Frame variables: {'when': 12.0014, 'event': [12, <obj@0x1063623d8>, 'activate', []], 'target': <obj@0x1063623d8>, 'message': 'activate', 'parms': []}
  231:             general_apply(target, message, parms)
                                ^
 -----------------------------------------------------
 Method [32;49mgeneral_apply[39;49m in class [34;49mnil[39;49m, char 24614 in file 
     /Users/kososuzuki/serpent/lib/sched.srp
-Frame variables: {'target': <obj@0x104be23d8>, 'message': 'activate', 'parms': []}
+Frame variables: {'target': <obj@0x1063623d8>, 'message': 'activate', 'parms': []}
  568:         sendapply(target, message, parms)
                                                ^
 -----------------------------------------------------
 Method [32;49mactivate[39;49m in class [34;49mVscheduler[39;49m, char 18477 in file 
     /Users/kososuzuki/serpent/lib/sched.srp
-Frame variables: {'event': [12, <obj@0x104b9c7b0>, 'beat_update', []], 'target': <obj@0x104b9c7b0>, 'message': 'beat_update', 'parms': []}
+Frame variables: {'event': [12, <obj@0x10631c7b0>, 'beat_update', []], 'target': <obj@0x10631c7b0>, 'message': 'beat_update', 'parms': []}
  423:             general_apply(target, message, parms)
                                ^
 -----------------------------------------------------
 Method [32;49mgeneral_apply[39;49m in class [34;49mnil[39;49m, char 24614 in file 
     /Users/kososuzuki/serpent/lib/sched.srp
-Frame variables: {'target': <obj@0x104b9c7b0>, 'message': 'beat_update', 'parms': []}
+Frame variables: {'target': <obj@0x10631c7b0>, 'message': 'beat_update', 'parms': []}
  568:         sendapply(target, message, parms)
                                                ^
 -----------------------------------------------------
@@ -54,9 +54,15 @@ Frame variables: {'pitch': 66}
  118:                     play_a_measure() // implemented in player only
                                         ^
 -----------------------------------------------------
-Method [32;49mplay_a_measure[39;49m in class [34;49mnil[39;49m, char 7889 in file 
+Method [32;49mplay_a_measure[39;49m in class [34;49mnil[39;49m, char 7310 in file 
     /Users/kososuzuki/Desktop/bass_generator/player/playerdemo.srp
 Frame variables: {'i': nil}
- 218:                       dur)
-                            ^
-[31;49mglobal variable is unbound - dur[39;49m
+ 205:         rhythmSeq = MarkovRhythm(new, ratio, beatsLeft)
+                                      ^
+-----------------------------------------------------
+Method [32;49mMarkovRhythm[39;49m in class [34;49mnil[39;49m, char 5087 in file 
+    /Users/kososuzuki/Desktop/bass_generator/player/playerdemo.srp
+Frame variables: {'seq': [], 'ratio': [[-1, 0], [73, 100], [0, 46], [46, 73], [-1, 0]], 'beatsLeft': 4, 'i': 2}
+ 158:             seq.append(j)
+                             ^
+[31;49mglobal variable is unbound - j[39;49m

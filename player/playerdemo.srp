@@ -2,8 +2,8 @@ SERVICE = "bass"
 
 require "playerbase"
 
-density = 89
-complexity = 99
+density = 91
+complexity = 26
 range = 50
 constantBass = false
 rootDownbeat = true
@@ -51,14 +51,16 @@ initializeServices()
 # determine variation and complexity to rhythm)
 def makeRatioRhythm(ratio)
     i = idiv(complexity, 20)
+    j = idiv(99 - density, 20) - 1
+    if j == -1: j = 0
     if constantBass
         ratio[i] = [0, 100]
         return
     if i == 0
-        ratio[idiv(99 - density, 20)] = [0, 100]
+        ratio[j] = [0, 100]
     elif i == 1
         if density < 75
-            ratio[idiv(99 - density, 20)] = [0, 100]
+            ratio[j] = [0, 100]
         else
             ratio[1] = [0, 100]
     elif i == 4
@@ -141,19 +143,20 @@ def makeRatioPitch(seq, ratio)
             if ratio[j] != [-1, 0]
                 ratio[j] = [ratio[j][0] + 1, ratio[j][1] + 1]
         i = i + 1
-    print "pitchRatio:", ratio
 
 #(seq is the seq of rhythms so far, ratio is array of ratios for 
 # transitioning to states, beatsLeft is num of beats left in the measure)
 def MarkovRhythm(seq, ratio, beatsLeft)
-    if beatsLeft < 0.2
+    if beatsLeft < 0.05
         return seq
     x = int(random() * 100)
     for i = 0 to len(ratio)
-        if ratio[i][0] <= x and ratio[i][1] > x and
-           beatsLeft - 4 / (2.0 ** real(i)) > -0.2
+        dur = 4 / (2.0 ** real(i))
+        if complexity < 40
+            dur = dur * (cur_beats_per_measure / 4)
+        if ratio[i][0] <= x and ratio[i][1] > x and beatsLeft - dur > -0.02
             seq.append(i)
-            beatsLeft = beatsLeft - 4 / (2.0 ** real(i))
+            beatsLeft = beatsLeft - dur
     MarkovRhythm(seq, ratio, beatsLeft)
 
 #(seq is the seq of notes so far, ratio is array of ratios for 
@@ -189,10 +192,11 @@ def play_a_measure()
     display "    ", cur_scale, cur_chord, cur_bass
 
     if cur_style == 'rock'
+        random_seed(time_date()[0])
+        new = []
         #each elem represents the ratio of the Markov Chain transitioning to that
         #rhythm. Index 0 is whole note, 1 is half, 2 is quarter, etc the range is 
         #lower bound exclusive upper bound inclusive.
-        new = []
         ratio = [[-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0]]
         beatsLeft = cur_beats_per_measure
         if complexity > 59 and rootDownbeat and constantBass == false
@@ -207,15 +211,29 @@ def play_a_measure()
                  [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0]]
         makeRatioPitch([], ratio)
         noteSeq = MarkovPitch([], ratio, rhythmSeq)
-        curBeat = 4 / (2.0 ** real(noteSeq[0][1]))
+        dur = 4 / (2.0 ** real(noteSeq[0][1]))
+        if complexity < 40
+            dur = dur * (cur_beats_per_measure / 4)
+        if complexity > 19 and complexity < 40 and density > 74
+            if cur_beats_per_measure == 3
+                    dur = 2
+            elif cur_beats_per_measure == 5
+                    dur = 3
+        curBeat = dur
         if noteSeq[0][0] == 12
             vel = 0
         else
             vel = 100
         midi_out.note(0, noteSeq[0][0] + 36, vel, curBeat - .01)
-        print "noteSeq:", noteSeq
         for i = 1 to len(noteSeq)
             dur = 4 / (2.0 ** real(noteSeq[i][1]))
+            if complexity < 40
+                dur = dur * (cur_beats_per_measure / 4)
+                if complexity > 19 and density > 74
+                    if cur_beats_per_measure == 3
+                        dur = 1
+                    elif cur_beats_per_measure == 5
+                        dur = 2
             if noteSeq[i][0] == 12
                 vel = 0
             else
