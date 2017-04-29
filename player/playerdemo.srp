@@ -31,26 +31,35 @@ def fader3_handler(time, address, types, float_param)
     display range
     vtsched.finish_use()
 
+def fader5_handler(time, address, types, float_param)
+    display "fader5_handler", time, address, types, float_param
+    vtsched.start_use()
+    volume = int(127 * float_param)
+    display volume
+    vtsched.finish_use()
+
 def toggle1_handler(time, address, types, int_param)
     display "toggle1_handler", time, address, types, int_param
     vtsched.start_use()
-    constantBass = int_param
+    constantBass = true if int_param == 1 else false
     display constantBass
     vtsched.finish_use()
 
 def toggle2_handler(time, address, types, int_param)
     display "toggle2_handler", time, address, types, int_param
     vtsched.start_use()
-    rootDownbeat = int_param
+    rootDownbeat = true if int_param == 1 else false
     display rootDownbeat
     vtsched.finish_use()
 
 def initializeServices()
-    o2_osc_port_new(SERVICE, 8660, false)
+    o2_osc_port_new(SERVICE, 8770, false)
     o2_method_new("/" + SERVICE + "/1/fader1", "f", 'fader1_handler', true)
     o2_method_new("/" + SERVICE + "/1/fader2", "f", 'fader2_handler', true)
     o2_method_new("/" + SERVICE + "/1/fader3", "f", 'fader3_handler', true)
+    o2_method_new("/" + SERVICE + "/1/fader5", "f", 'fader5_handler', true)
     o2_method_new("/" + SERVICE + "/1/toggle1", "i", 'toggle1_handler', true)
+    o2_method_new("/" + SERVICE + "/1/toggle2", "i", 'toggle2_handler', true)
 
 initializeServices()
 
