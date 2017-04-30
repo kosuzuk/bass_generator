@@ -262,6 +262,7 @@ def MarkovPitch(seq, ratio, rhythmSeq, numNotesInChord)
         if ratio[i][0] <= x and ratio[i][1] > x and not appended
             seq.append([i, rhythmSeq[len(seq)]])
             appended = true
+    if not appended: seq.append([0, rhythmSeq[len(seq)]])
     if len(seq) == len(rhythmSeq)
         return seq
     makeRatioPitch(seq, ratio, numNotesInChord)
@@ -315,7 +316,7 @@ def play_a_measure()
         print "noteSeq:", noteSeq
         for i = 0 to len(noteSeq)
             if noteSeq[i][0] != 12
-                if not cur_chord[noteSeq[i][0]]
+                if not cur_chord[noteSeq[i][0]] and i != 0
                     if abs(noteSeq[i][0] - noteSeq[i - 1][0] % 12) > 2
                         if idiv(noteSeq[i][0], 6) == 0
                             noteSeq[i][0] = noteSeq[i][0] + 12
