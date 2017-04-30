@@ -2,8 +2,8 @@ SERVICE = "bass"
 
 require "playerbase"
 
-density = 80
-complexity = 40
+density = 90
+complexity = 97
 range = 50
 constantBass = false
 rootDownbeat = true
@@ -99,7 +99,7 @@ def nextNoteInScale(i, dir)
 # determine the amount of rest, complexity is a scale of [0, 100) to
 # determine variation for eaxmple not starting on root, use of non-chord tones 
 # and non-harmonic tones, wider jumps, range determines pitch range on a scale of [0, 100))
-def makeRatioPitch(seq, ratio, numNotesInChord, lastNote)
+def makeRatioPitch(seq, ratio, numNotesInChord)
     clearRatio(ratio)
     if density == 0
         ratio[12] = [0, 100]
@@ -109,6 +109,7 @@ def makeRatioPitch(seq, ratio, numNotesInChord, lastNote)
         return
     i = idiv(complexity, 20)
     prevNote = -1
+    prevNote2 = -1
     nhtdp = false
     nhtcp = false
     nhtdInterval = 0
@@ -127,6 +128,8 @@ def makeRatioPitch(seq, ratio, numNotesInChord, lastNote)
     else
         prevNote = seq[len(seq) - 1][0]
         if prevNote == 12: prevNote = -1
+        if len(seq) > 1: prevNote2 = seq[len(seq) - 2][0]
+        if prevNote2 == 12: prevNote2 = -1
         if i == 0
             restRatio = 99
         elif i == 1
@@ -136,10 +139,14 @@ def makeRatioPitch(seq, ratio, numNotesInChord, lastNote)
                 restRatio = 0
         else
             restRatio = 99 - density
-            if prevNote != -1 and not lastNote and nonHarmonicTones
-                if i == 3
-                    if cur_chord[prevNote]
+            if prevNote != -1 and nonHarmonicTones
+                if i > 2
+                    if cur_chord[prevNote] or (not cur_scale[prevNote] and 
+                       not (len(seq) > 2 and (prevNote2 != -1 and 
+                       cur_scale[prevNote2] and not cur_chord[prevNote2])))
                         nhtdp = true
+                if i == 4 and cur_scale[prevNote]
+                    nhtcp = true
     if prevNote != -1 and not cur_chord[prevNote]: restRatio = 0
     ratio[12] = [100 - restRatio, 100]
     ratioInterval = 33
@@ -148,7 +155,7 @@ def makeRatioPitch(seq, ratio, numNotesInChord, lastNote)
         ratioInterval = ratioInterval - 8
     if nhtdp
         ratioInterval = ratioInterval - int(ratioInterval * .27)
-        nhtdInterval = int(27 * ((100 - restRatio) / 100) / 2)
+        nhtdInterval = int(26 * ((100 - restRatio) / 100) / 2)
     if nhtcp
         ratioInterval = ratioInterval - int(ratioInterval * .15)
         nhtcInterval = int(15 * ((100 - restRatio) / 100) / 2)
@@ -158,10 +165,11 @@ def makeRatioPitch(seq, ratio, numNotesInChord, lastNote)
         if cur_chord[i]
             if prevNote != -1 and not cur_chord[prevNote]
                 if not cur_scale[prevNote]
-                    1+1
-                    #if note is close to previous note
-                     #   do smth
-                     #  lastRatio = ratio[i][1]
+                    if ((abs(prevNote - i) == 1) or (abs(prevNote - i) == 11)) and 
+                       prevNote2 != i
+                        ratio[i][0] = 0
+                        ratio[i][1] = 100
+                        total = 100
                 else
                     if (abs(prevNote - i) < 3) or (abs(prevNote - i) > 9)
                         ratioIntervalT  = 50
@@ -177,15 +185,34 @@ def makeRatioPitch(seq, ratio, numNotesInChord, lastNote)
                 ratio[i][1] = ratio[i][0] + ratioInterval
                 lastRatio = ratio[i][1]
                 total = total + ratioInterval
-        else    
-            if nhtdp and ((abs(prevNote - i) < 3) or (abs(prevNote - i) > 9)) and
-               cur_scale[i]
-                ratio[i][0] = lastRatio
-                ratio[i][1] = ratio[i][0] + nhtdInterval
-                lastRatio = ratio[i][1]
-                total = total + nhtdInterval
-            elif nhtcp and ((abs(prevNote - i) == 1) or (abs(prevNote - i) == 11))
-                1+1 
+        else
+            if cur_scale[i]
+                if nhtdp
+                    if cur_chord[prevNote] and ((abs(prevNote - i) < 3) or 
+                                                (abs(prevNote - i) > 9))
+                        ratio[i][0] = lastRatio
+                        ratio[i][1] = ratio[i][0] + nhtdInterval
+                        lastRatio = ratio[i][1]
+                        total = total + nhtdInterval
+                    if not cur_scale[prevNote] and ((abs(prevNote - i) == 1) or 
+                                                    (abs(prevNote - i) == 11))
+                        if prevNote2 != i
+                            ratio[i][0] = 0
+                            ratio[i][1] = 100
+                            total = 100
+            else
+                if nhtcp and ((abs(prevNote - i) == 1) or (abs(prevNote - i) == 11)) and 
+                   not (prevNote2 != -1 and prevNote2 == i)
+                    nhtcIntervalT = nhtcInterval
+                    x = nextNoteInScale(prevNote, 1)
+                    y = nextNoteInScale(prevNote, -1)
+                    if not((abs(x - prevNote) == 2 or abs(x - prevNote) == 10) and 
+                           (abs(y - prevNote) == 2 or abs(y - prevNote) == 10))
+                        nhtcIntervalT = nhtcInterval * 2
+                    ratio[i][0] = lastRatio
+                    ratio[i][1] = ratio[i][0] + nhtcIntervalT
+                    lastRatio = ratio[i][1]
+                    total = total + nhtcIntervalT
             
     #add remaining ratios caused by decimal truncation as evenly as possible to
     #valid notes for output
@@ -218,17 +245,18 @@ def MarkovRhythm(seq, ratio, beatsLeft)
 
 #(seq is the seq of notes so far, ratio is array of ratios for 
 # transitioning to states, rhythmSeq is array of rhythm seq to match the pitch)
-def MarkovPitch(seq, ratio, rhythmSeq, numNotesInChord, lastNote)
+def MarkovPitch(seq, ratio, rhythmSeq, numNotesInChord)
     print "ratio:", ratio
     x = int(random() * 100)
+    appended = false
     for i = 0 to len(ratio)
-        if ratio[i][0] <= x and ratio[i][1] > x
+        if ratio[i][0] <= x and ratio[i][1] > x and not appended
             seq.append([i, rhythmSeq[len(seq)]])
-    if lastNote
+            appended = true
+    if len(seq) == len(rhythmSeq)
         return seq
-    lastNote = len(seq) == len(rhythmSeq) - 1
-    makeRatioPitch(seq, ratio, numNotesInChord, lastNote)
-    MarkovPitch(seq, ratio, rhythmSeq, numNotesInChord, lastNote)
+    makeRatioPitch(seq, ratio, numNotesInChord)
+    MarkovPitch(seq, ratio, rhythmSeq, numNotesInChord)
 
 def play_a_measure()
     # compute a measure using these variables:
@@ -272,8 +300,8 @@ def play_a_measure()
         for i = 0 to 12
             if cur_chord[i]
                 numNotesInChord = numNotesInChord + 1
-        makeRatioPitch([], ratio, numNotesInChord, false)
-        noteSeq = MarkovPitch([], ratio, rhythmSeq, numNotesInChord, false)
+        makeRatioPitch([], ratio, numNotesInChord)
+        noteSeq = MarkovPitch([], ratio, rhythmSeq, numNotesInChord)
 
         print "noteSeq:", noteSeq
         for i = 0 to len(noteSeq)
