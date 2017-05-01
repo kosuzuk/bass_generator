@@ -52,6 +52,13 @@ def toggle2_handler(time, address, types, int_param)
     display rootDownbeat
     vtsched.finish_use()
 
+def toggle3_handler(time, address, types, int_param)
+    display "toggle3_handler", time, address, types, int_param
+    vtsched.start_use()
+    rootDownbeat = true if int_param == 1 else false
+    display nonHarmonicTones
+    vtsched.finish_use()
+
 def initializeServices()
     o2_osc_port_new(SERVICE, 8770, false)
     o2_method_new("/" + SERVICE + "/1/fader1", "f", 'fader1_handler', true)
@@ -60,6 +67,7 @@ def initializeServices()
     o2_method_new("/" + SERVICE + "/1/fader5", "f", 'fader5_handler', true)
     o2_method_new("/" + SERVICE + "/1/toggle1", "i", 'toggle1_handler', true)
     o2_method_new("/" + SERVICE + "/1/toggle2", "i", 'toggle2_handler', true)
+    o2_method_new("/" + SERVICE + "/1/toggle3", "i", 'toggle3_handler', true)
 
 initializeServices()
 
