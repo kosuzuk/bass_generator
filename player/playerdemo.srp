@@ -55,7 +55,7 @@ def toggle2_handler(time, address, types, int_param)
 def toggle3_handler(time, address, types, int_param)
     display "toggle3_handler", time, address, types, int_param
     vtsched.start_use()
-    rootDownbeat = true if int_param == 1 else false
+    nonHarmonicTones = true if int_param == 1 else false
     display nonHarmonicTones
     vtsched.finish_use()
 
