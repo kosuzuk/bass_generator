@@ -1,9 +1,9 @@
 debug.srp created srp.log for error report...
 runtime exception handler called
-exception is: [31;49msubscript out of bounds: -1[39;49m
-frame variables: {i: 0}
-frame pc: 312
-frame method: play_a_measure
+exception is: [31;49mexpected String or Array[39;49m
+frame variables: {seq: [0, 1], ratio: [[-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0]], numNotesInChord: 3, i: nil, j: nil}
+frame pc: 123
+frame method: makeRatioPitch
 frame class: nil
 
 Debugger invoked.
@@ -12,51 +12,19 @@ Method [32;49m<global>[39;49m in class [34;49mnil[39;49m
 -----------------------------------------------------
 Method [32;49m<callin_method>[39;49m in class [34;49mnil[39;49m
 -----------------------------------------------------
-Method [32;49mwxs_sched_poll[39;49m in class [34;49mnil[39;49m, char 26004 in file 
-    /Users/kososuzuki/serpent/lib/sched.srp
-Frame variables: {'time': 63.2017}
- 615:     rtsched.poll(time)
-                      ^
------------------------------------------------------
-Method [32;49mpoll[39;49m in class [34;49mScheduler[39;49m, char 11217 in file 
-    /Users/kososuzuki/serpent/lib/sched.srp
-Frame variables: {'when': 63.2017, 'event': [63.2, <obj@0x1055623d8>, 'activate', []], 'target': <obj@0x1055623d8>, 'message': 'activate', 'parms': []}
- 231:             general_apply(target, message, parms)
-                               ^
------------------------------------------------------
-Method [32;49mgeneral_apply[39;49m in class [34;49mnil[39;49m, char 24614 in file 
-    /Users/kososuzuki/serpent/lib/sched.srp
-Frame variables: {'target': <obj@0x1055623d8>, 'message': 'activate', 'parms': []}
- 568:         sendapply(target, message, parms)
-                                               ^
------------------------------------------------------
-Method [32;49mactivate[39;49m in class [34;49mVscheduler[39;49m, char 18477 in file 
-    /Users/kososuzuki/serpent/lib/sched.srp
-Frame variables: {'event': [124, <obj@0x10551c7b0>, 'beat_update', []], 'target': <obj@0x10551c7b0>, 'message': 'beat_update', 'parms': []}
- 423:             general_apply(target, message, parms)
-                               ^
------------------------------------------------------
-Method [32;49mgeneral_apply[39;49m in class [34;49mnil[39;49m, char 24614 in file 
-    /Users/kososuzuki/serpent/lib/sched.srp
-Frame variables: {'target': <obj@0x10551c7b0>, 'message': 'beat_update', 'parms': []}
- 568:         sendapply(target, message, parms)
-                                               ^
------------------------------------------------------
-Method [32;49mbeat_update[39;49m in class [34;49mStage[39;49m, char 3014 in file 
-    /Users/kososuzuki/Desktop/bass_generator/player/../cond/stage.srp
-Frame variables: {'bnow': 124}
- 103:         metronome()
-                       ^
------------------------------------------------------
-Method [32;49mmetronome[39;49m in class [34;49mStage[39;49m, char 3526 in file 
-    /Users/kososuzuki/Desktop/bass_generator/player/../cond/stage.srp
-Frame variables: {'pitch': 66}
- 118:                     play_a_measure() // implemented in player only
-                                        ^
------------------------------------------------------
-Method [32;49mplay_a_measure[39;49m in class [34;49mnil[39;49m, char 12391 in file 
+Method [32;49m<immediate command 0>[39;49m in class [34;49mnil[39;49m, char 19530 in file 
     /Users/kososuzuki/Desktop/bass_generator/player/playerdemo.srp
-Frame variables: {'i': 0}
- 320:                     if abs(noteSeq[i][0] - noteSeq[i - 1][0] % 12) > 2
-                                                        ^
-[31;49msubscript out of bounds: -1[39;49m
+ 531: if runTest() == false: print "error"
+                ^
+-----------------------------------------------------
+Method [32;49mrunTest[39;49m in class [34;49mnil[39;49m, char 18627 in file 
+    /Users/kososuzuki/Desktop/bass_generator/player/playerdemo.srp
+ 492:     makeRatioPitch([0, 1], pitchRatio, 3)
+                        ^
+-----------------------------------------------------
+Method [32;49mmakeRatioPitch[39;49m in class [34;49mnil[39;49m, char 4583 in file 
+    /Users/kososuzuki/Desktop/bass_generator/player/playerdemo.srp
+Frame variables: {'seq': [0, 1], 'ratio': [[-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0]], 'numNotesInChord': 3, 'i': nil, 'j': nil}
+ 154:         prevNote = seq[len(seq) - 1][0]
+                                          ^
+[31;49mexpected String or Array[39;49m

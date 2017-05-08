@@ -2,13 +2,16 @@ SERVICE = "bass"
 
 require "playerbase"
 
+volume = 100
 density = 90
-complexity = 97
-range = 50
+complexity = 90
+range = 99
 constantBass = false
 rootDownbeat = true
+oneOctave = false
 nonHarmonicTones = true
-volume = 100
+
+lastNote = cur_bass + 36
 
 def fader1_handler(time, address, types, float_param)
     display "fader1_handler", time, address, types, float_param
@@ -55,6 +58,13 @@ def toggle2_handler(time, address, types, int_param)
 def toggle3_handler(time, address, types, int_param)
     display "toggle3_handler", time, address, types, int_param
     vtsched.start_use()
+    oneOctave = true if int_param == 1 else false
+    display oneOctave
+    vtsched.finish_use()
+
+def toggle4_handler(time, address, types, int_param)
+    display "toggle4_handler", time, address, types, int_param
+    vtsched.start_use()
     nonHarmonicTones = true if int_param == 1 else false
     display nonHarmonicTones
     vtsched.finish_use()
@@ -68,13 +78,11 @@ def initializeServices()
     o2_method_new("/" + SERVICE + "/1/toggle1", "i", 'toggle1_handler', true)
     o2_method_new("/" + SERVICE + "/1/toggle2", "i", 'toggle2_handler', true)
     o2_method_new("/" + SERVICE + "/1/toggle3", "i", 'toggle3_handler', true)
+    o2_method_new("/" + SERVICE + "/1/toggle4", "i", 'toggle4_handler', true)
 
 initializeServices()
 
-#(seq is the sequence of notes so far, ratio is array of ratios for transitioning 
-# to states, density is a scale of [0, 100) to determine the amount of rest
-# complexity is a scale of [0, 100) to 
-# determine variation and complexity to rhythm)
+#(array of probabilities for each rhythm) creates the ratio for rhythms
 def makeRatioRhythm(ratio)
     i = idiv(complexity, 20)
     j = idiv(99 - density, 20) - 1
@@ -97,10 +105,12 @@ def makeRatioRhythm(ratio)
         ratio[i + 1] = [46, 73]
         ratio[i - 1] = [73, 100]
 
+#clears the ranges in ratio
 def clearRatio(ratio)
     for i = 0 to 13
         ratio[i] = [-1, 0]
 
+#(current note, direction) returns the next note in cur_scale 
 def nextNoteInScale(i, dir)
     i = i + dir
     if i == -1: i = 11
@@ -111,11 +121,8 @@ def nextNoteInScale(i, dir)
         if i == 12: i = 0
     return i
 
-#(seq is the sequence of notes so far, ratio is array of ratios for transitioning
-# to states, cur_scale, cur_chord, cur_bass, density is a scale of [0, 100) to 
-# determine the amount of rest, complexity is a scale of [0, 100) to
-# determine variation for eaxmple not starting on root, use of non-chord tones 
-# and non-harmonic tones, wider jumps, range determines pitch range on a scale of [0, 100))
+#(sequence of notes so far, array of probabilities for each state, number of
+# notes in cur_chord)
 def makeRatioPitch(seq, ratio, numNotesInChord)
     clearRatio(ratio)
     if density == 0
@@ -124,7 +131,7 @@ def makeRatioPitch(seq, ratio, numNotesInChord)
     if constantBass
         ratio[cur_bass] = [0, 100]
         return
-    i = idiv(complexity, 20)
+    comp = idiv(complexity, 20)
     prevNote = -1
     prevNote2 = -1
     nhtdp = false
@@ -135,7 +142,7 @@ def makeRatioPitch(seq, ratio, numNotesInChord)
         if rootDownbeat
             ratio[cur_bass] = [0, 100]
             return
-        elif i < 2
+        elif comp < 2
             if density < 20
                 restRatio = 99 - (density * 4)
             else
@@ -147,9 +154,9 @@ def makeRatioPitch(seq, ratio, numNotesInChord)
         if prevNote == 12: prevNote = -1
         if len(seq) > 1: prevNote2 = seq[len(seq) - 2][0]
         if prevNote2 == 12: prevNote2 = -1
-        if i == 0
+        if comp == 0
             restRatio = 99
-        elif i == 1
+        elif comp == 1
             if density < 75
                 restRatio = 99
             else
@@ -157,12 +164,12 @@ def makeRatioPitch(seq, ratio, numNotesInChord)
         else
             restRatio = 99 - density
             if prevNote != -1 and nonHarmonicTones
-                if i > 2
+                if comp > 2
                     if cur_chord[prevNote] or (not cur_scale[prevNote] and 
                        not (len(seq) > 2 and (prevNote2 != -1 and 
                        cur_scale[prevNote2] and not cur_chord[prevNote2])))
                         nhtdp = true
-                if i == 4 and cur_scale[prevNote]
+                if comp == 4 and cur_scale[prevNote]
                     nhtcp = true
     if prevNote != -1 and not cur_chord[prevNote]: restRatio = 0
     ratio[12] = [100 - restRatio, 100]
@@ -177,7 +184,7 @@ def makeRatioPitch(seq, ratio, numNotesInChord)
         ratioInterval = ratioInterval - int(ratioInterval * .15)
         nhtcInterval = int(15 * ((100 - restRatio) / 100) / 2)
     total = restRatio + 1
-    lastRatio = 0
+    prevRatio = 0
     for i = 0 to 12
         if cur_chord[i]
             if prevNote != -1 and not cur_chord[prevNote]
@@ -193,23 +200,23 @@ def makeRatioPitch(seq, ratio, numNotesInChord)
                         if (not cur_chord[nextNoteInScale(prevNote, 1)]) or 
                            (not cur_chord[nextNoteInScale(prevNote, -1)])
                             ratioIntervalT = 100
-                        ratio[i][0] = lastRatio
+                        ratio[i][0] = prevRatio
                         ratio[i][1] = ratio[i][0] + ratioIntervalT
-                        lastRatio = ratio[i][1]
+                        prevRatio = ratio[i][1]
                         total = total + ratioIntervalT
             else
-                ratio[i][0] = lastRatio
+                ratio[i][0] = prevRatio
                 ratio[i][1] = ratio[i][0] + ratioInterval
-                lastRatio = ratio[i][1]
+                prevRatio = ratio[i][1]
                 total = total + ratioInterval
         else
             if cur_scale[i]
                 if nhtdp
                     if cur_chord[prevNote] and ((abs(prevNote - i) < 3) or 
                                                 (abs(prevNote - i) > 9))
-                        ratio[i][0] = lastRatio
+                        ratio[i][0] = prevRatio
                         ratio[i][1] = ratio[i][0] + nhtdInterval
-                        lastRatio = ratio[i][1]
+                        prevRatio = ratio[i][1]
                         total = total + nhtdInterval
                     if not cur_scale[prevNote] and ((abs(prevNote - i) == 1) or 
                                                     (abs(prevNote - i) == 11))
@@ -226,11 +233,11 @@ def makeRatioPitch(seq, ratio, numNotesInChord)
                     if not((abs(x - prevNote) == 2 or abs(x - prevNote) == 10) and 
                            (abs(y - prevNote) == 2 or abs(y - prevNote) == 10))
                         nhtcIntervalT = nhtcInterval * 2
-                    ratio[i][0] = lastRatio
+                    ratio[i][0] = prevRatio
                     ratio[i][1] = ratio[i][0] + nhtcIntervalT
-                    lastRatio = ratio[i][1]
+                    prevRatio = ratio[i][1]
                     total = total + nhtcIntervalT
-            
+
     #add remaining ratios caused by decimal truncation as evenly as possible to
     #valid notes for output
     remainder = 100 - total
@@ -245,8 +252,8 @@ def makeRatioPitch(seq, ratio, numNotesInChord)
                 ratio[j] = [ratio[j][0] + 1, ratio[j][1] + 1]
         i = (i + 1) % 12
 
-#(seq is the seq of rhythms so far, ratio is array of ratios for 
-# transitioning to states, beatsLeft is num of beats left in the measure)
+#(seq of rhythms so far, array of probabilities for each state, 
+# num of beats left in the measure) creates an array of rhythms for the notes
 def MarkovRhythm(seq, ratio, beatsLeft)
     if beatsLeft < 0.05
         return seq
@@ -260,21 +267,67 @@ def MarkovRhythm(seq, ratio, beatsLeft)
             beatsLeft = beatsLeft - dur
     MarkovRhythm(seq, ratio, beatsLeft)
 
-#(seq is the seq of notes so far, ratio is array of ratios for 
-# transitioning to states, rhythmSeq is array of rhythm seq to match the pitch)
+#(seq of rhythms so far, array of probabilities for each state, 
+# array of rhythms for the notes, number of notes in cur_chord) 
+#creates an array of notes using provoded rhythms for each note and pitches 
 def MarkovPitch(seq, ratio, rhythmSeq, numNotesInChord)
     print "ratio:", ratio
     x = int(random() * 100)
     appended = false
+    r = idiv(range, 3)
+    ru = idiv(r, 2) + r % 2
+    rl = 12 - idiv(r, 2)
     for i = 0 to len(ratio)
         if ratio[i][0] <= x and ratio[i][1] > x and not appended
-            seq.append([i, rhythmSeq[len(seq)]])
+            temp = i
+            if i != 12 and not oneOctave and range < 33 and temp > ru and temp < rl
+                temp = cur_bass
+            seq.append([temp, rhythmSeq[len(seq)]])
             appended = true
     if not appended: seq.append([0, rhythmSeq[len(seq)]])
     if len(seq) == len(rhythmSeq)
         return seq
     makeRatioPitch(seq, ratio, numNotesInChord)
     MarkovPitch(seq, ratio, rhythmSeq, numNotesInChord)
+
+#outputs a number to signify how many octaves note b has to go up to be close to a
+def getOctDif(a, b)
+    res = 0
+    while true
+        if abs(a - (b + 12)) <= abs(a - b) 
+            b = b + 12
+            res = res + 1
+        elif abs(a - (b - 12)) < abs(a - b)
+            b = b - 12
+            res = res - 1
+        else
+            return res
+
+#fix the octave of curNote
+def fixOct(prevNote, curNote, leapPossibility)
+    comp = idiv(complexity, 20)
+    if prevNote == -1
+        if rootDownbeat
+            if comp == 4 and random() * 100 < 15 and range > 71
+                return cur_bass + 24
+        prevNote = lastNote
+    res = curNote + 12 * getOctDif(prevNote, curNote)
+    octJump = false
+    if leapPossibility and (random() * 100) < (complexity / 3)
+        if prevNote > res
+            res = res + 12
+        elif prevNote < res
+            res = res - 12
+        else
+            res = res + 12
+            octJump = true
+    r = idiv(range, 3)
+    if res > 36 + idiv(r, 2) + r % 2
+        res = res - 12
+        if octJump: res = res - 12
+    if res < 36 - idiv(r, 2) and octJump
+        res = res + 12
+    return res
 
 def play_a_measure()
     # compute a measure using these variables:
@@ -322,15 +375,33 @@ def play_a_measure()
         noteSeq = MarkovPitch([], ratio, rhythmSeq, numNotesInChord)
 
         print "noteSeq:", noteSeq
+        prevNote = -1
+        curNote = noteSeq[0][0]
+        #fix the octaves for each note
         for i = 0 to len(noteSeq)
-            if noteSeq[i][0] != 12
-                if not cur_chord[noteSeq[i][0]] and i != 0
-                    if abs(noteSeq[i][0] - noteSeq[i - 1][0] % 12) > 2
-                        if idiv(noteSeq[i][0], 6) == 0
-                            noteSeq[i][0] = noteSeq[i][0] + 12
+            curNote = noteSeq[i][0]
+            if curNote != 12
+                if not oneOctave and not constantBass
+                    if prevNote != -1 and prevNote != 12 and
+                       cur_chord[curNote] and cur_chord[prevNote % 12] and
+                       idiv(complexity, 20) > 2
+                        noteSeq[i][0] = fixOct(prevNote, curNote, true)
+                    else
+                        noteSeq[i][0] = fixOct(prevNote, curNote, false)
+                else
+                    if not cur_chord[curNote] and 
+                       abs(curNote - prevNote % 12) > 2 and not constantBass
+                        if idiv(curNote, 6) == 0
+                            curNote = curNote + 12
                         else
-                            noteSeq[i][0] = noteSeq[i][0] - 12
-                noteSeq[i][0] = noteSeq[i][0] + 36
+                            curNote = curNote - 12
+                    noteSeq[i][0] = curNote + 36
+                if prevNote != 12: prevNote = noteSeq[i][0]
+        print "noteSeq2:", noteSeq
+        if noteSeq[len(noteSeq) - 1][0] != 12
+            lastNote = noteSeq[len(noteSeq) - 1][0]
+        else
+            lastNote = 36
         if noteSeq[0][0] == 12
             vel = 0
         else
@@ -361,3 +432,98 @@ def play_a_measure()
             vtsched.cause(curBeat, midi_out, 'note', 0, noteSeq[i][0], vel,
                           dur - .01)
             curBeat = curBeat + dur
+
+def runTest()
+    #Assume key of C major for scale and chord, with C as root
+    cur_scale = [true, false, true, false, true, true, false, true, false, true, false, true]
+    cur_chord = [true, false, false, false, true, false, false, true, false, false, false, false]
+
+    lst = [[2, 0], [9, 100], [-1, 0], [-1, -20], [11, 19], [45, 3], [2, 0], 
+           [9, 100], [-1, 0], [-1, -20], [11, 19], [45, 3], [45, 3]]
+    clearRatio(lst)
+    if lst != [[-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], 
+               [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0]]: return false
+
+    density = 0
+    complexity = 0
+    range = 99
+    constantBass = false
+    rootDownbeat = false
+    oneOctave = false
+    nonHarmonicTones = false
+    rhythmRatio = [[-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0]]
+    pitchRatio = [[-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], 
+                  [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0]]
+    
+    makeRatioRhythm(rhythmRatio)
+    if rhythmRatio != [[-1, 0], [-1, 0], [-1, 0], [0, 100], [-1, 0]]: return false
+    
+    makeRatioPitch([], pitchRatio, 3)
+    if pitchRatio != [[-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], 
+                      [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [0, 100]]
+        return false
+
+    density = 99
+    makeRatioPitch([], pitchRatio, 3)
+    if pitchRatio != [[0, 33], [-1, 0], [-1, 0], [-1, 0], [33, 66], [-1, 0], 
+                      [-1, 0], [66, 99], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [100, 100]]
+        return false
+
+    complexity = 99
+    makeRatioPitch([[0, 1]], pitchRatio, 3)
+    if pitchRatio != [[0, 33], [-1, 0], [-1, 0], [-1, 0], [33, 66], [-1, 0], 
+                      [-1, 0], [66, 99], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [100, 100]]
+        return false
+
+    density = 90
+    nonHarmonicTones = true
+    makeRatioPitch([[0, 1]], pitchRatio, 3)
+    if pitchRatio != [[0, 19], [19, 31], [31, 42], [-1, 0], [42, 61], [-1, 0], 
+                      [-1, 0], [61, 80], [-1, 0], [-1, 0], [-1, 0], [80, 91], [91, 100]]
+        return false
+
+    rootDownbeat = true
+    makeRatioPitch([], pitchRatio, 3)
+    if pitchRatio[0] != [0, 100]: return false
+
+    constantBass = true
+    makeRatioPitch([[0, 1]], pitchRatio, 3)
+    if pitchRatio[0] != [0, 100]: return false
+
+    if nextNoteInScale(0, 1) != 2: return false
+
+    if nextNoteInScale(2, 1) != 4: return false
+
+    if nextNoteInScale(4, 1) != 5: return false
+
+    if nextNoteInScale(6, 1) != 7: return false
+
+    if nextNoteInScale(6, -1) != 5: return false
+
+    if getOctDif(40, 6) != 3: return false
+
+    if getOctDif(36, 6) != 3: return false
+
+    if getOctDif(30, 6) != 2: return false
+
+    if getOctDif(30, 42) != -1: return false
+
+    if getOctDif(30, 30) != 0: return false
+
+    complexity = 0
+    range = 3
+    oneOctave = false
+    if fixOct(38, 2, false) != 26: return false
+
+    range = 99
+    if fixOct(38, 2, false) != 38: return false
+
+    if fixOct(-1, 2, false) != 38: return false
+
+    if fixOct(38, 11, false) != 35: return false
+
+    oneOctave = true
+    if fixOct(48, 0, false) != 48: return false
+    return true
+
+#if runTest() == false: print "error"
